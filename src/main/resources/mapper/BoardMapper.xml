@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace 는 반드시 매퍼 인터페이스의 패키지 경로 및 이름이 동일해야 한다 -->
+<mapper namespace="com.example.board.mapper.BoardMapper">
+
+    <!-- 검색어(keyword)가 있으면 제목 OR 내용에 LIKE 검색, 없으면 전체 목록 -->
+    <select id="findAll" resultType="Board">
+        SELECT id, title, content, writer, view_count, created_at, updated_at
+        FROM board
+        <where>
+            <if test="keyword != null and keyword != ''">
+                (title LIKE CONCAT('%', #{keyword}, '%')
+                OR content LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+        ORDER BY id DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*)
+        FROM board
+        <where>
+            <if test="keyword != null and keyword != ''">
+                (title LIKE CONCAT('%', #{keyword}, '%')
+                OR content LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+    </select>
+
+    <select id="findById" resultType="Board">
+        SELECT id, title, content, writer, view_count, created_at, updated_at
+        FROM board
+        WHERE id = #{id}
+    </select>
+
+    <!-- useGeneratedKeys: DB가 생성한 auto-increment PK를 board.id 필드에 자동 세팅 -->
+    <insert id="insert" parameterType="Board" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO board (title, content, writer, view_count, created_at, updated_at)
+        VALUES (#{title}, #{content}, #{writer}, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="update" parameterType="Board">
+        UPDATE board
+        SET title = #{title},
+            content = #{content},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM board WHERE id = #{id}
+    </delete>
+
+    <update id="increaseViewCount">
+        UPDATE board SET view_count = view_count + 1 WHERE id = #{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,40 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.16'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// Web : 기본
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	// MyBatis : 마이바티스 DB 연결
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
+	// Validation: 유효성 검사
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	// H2 (초보자용 인메모리 DB, MySQL로 바꾸려면 이 부분과 application.yml 수정)
+	runtimeOnly 'com.h2database:h2'
+	// Lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	// Swagger (springdoc-openapi) : API 문서화
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.16'
+	// Test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
