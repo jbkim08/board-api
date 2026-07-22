@@ -26,13 +26,13 @@ public class BoardService {
      * @param size 페이지당 개수
      */
     public PageResponse<BoardResponse> getBoards(String keyword, int page, int size) {
-        int offset = (page - 1) * size; // 현재 페이지에 맞는 offset 계산
-        //게시물을 현재 페이지 맞게 size만큼 가져옴
+        int offset = (page - 1) * size;
+
         List<Board> boards = boardMapper.findAll(keyword, offset, size);
-        long totalElements = boardMapper.countAll(keyword); //검색된 모든 게시물수
+        long totalElements = boardMapper.countAll(keyword);
 
         List<BoardResponse> content = boards.stream()
-                .map(board -> BoardResponse.from(board))
+                .map(BoardResponse::from)
                 .toList();
 
         return PageResponse.of(content, page, size, totalElements);
@@ -45,7 +45,7 @@ public class BoardService {
     public BoardResponse getBoard(Long id) {
         Board board = boardMapper.findById(id);
         if (board == null) {
-            //throw new BoardNotFoundException(id);
+            throw new BoardNotFoundException(id);
         }
         boardMapper.increaseViewCount(id);
         board.setViewCount(board.getViewCount() + 1); // 응답에도 반영
@@ -68,7 +68,7 @@ public class BoardService {
     public BoardResponse updateBoard(Long id, BoardUpdateRequest request) {
         Board board = boardMapper.findById(id);
         if (board == null) {
-            //throw new BoardNotFoundException(id);
+            throw new BoardNotFoundException(id);
         }
 
         board.setTitle(request.getTitle());
@@ -82,7 +82,7 @@ public class BoardService {
     public void deleteBoard(Long id) {
         Board board = boardMapper.findById(id);
         if (board == null) {
-            //throw new BoardNotFoundException(id);
+            throw new BoardNotFoundException(id);
         }
         boardMapper.deleteById(id);
     }
