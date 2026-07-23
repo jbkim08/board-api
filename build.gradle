@@ -25,7 +25,8 @@ dependencies {
 	// Validation: 유효성 검사
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	// H2 (초보자용 인메모리 DB, MySQL로 바꾸려면 이 부분과 application.yml 수정)
-	runtimeOnly 'com.h2database:h2'
+	//runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'com.mysql:mysql-connector-j'
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -33,6 +34,7 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.16'
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
 }
 
 tasks.named('test') {
