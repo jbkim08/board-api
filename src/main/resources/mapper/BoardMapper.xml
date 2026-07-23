@@ -18,6 +18,7 @@
         LIMIT #{size} OFFSET #{offset}
     </select>
 
+    <!-- 게시물 총 개수 (페이지 만들기용) -->
     <select id="countAll" resultType="long">
         SELECT COUNT(*)
         FROM board
@@ -29,6 +30,7 @@
         </where>
     </select>
 
+    <!--  id로 게시물 1개 조회  -->
     <select id="findById" resultType="Board">
         SELECT id, title, content, writer, view_count, created_at, updated_at
         FROM board
