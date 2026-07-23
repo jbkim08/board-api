@@ -5,6 +5,7 @@ import com.example.board.dto.BoardCreateRequest;
 import com.example.board.dto.BoardResponse;
 import com.example.board.dto.BoardUpdateRequest;
 import com.example.board.dto.PageResponse;
+import com.example.board.exception.BoardNotFoundException;
 import com.example.board.mapper.BoardMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,7 +46,7 @@ public class BoardService {
     public BoardResponse getBoard(Long id) {
         Board board = boardMapper.findById(id);
         if (board == null) {
-            //throw new BoardNotFoundException(id);
+            throw new BoardNotFoundException(id); //예외 발생
         }
         boardMapper.increaseViewCount(id);
         board.setViewCount(board.getViewCount() + 1); // 응답에도 반영
@@ -68,7 +69,7 @@ public class BoardService {
     public BoardResponse updateBoard(Long id, BoardUpdateRequest request) {
         Board board = boardMapper.findById(id);
         if (board == null) {
-            //throw new BoardNotFoundException(id);
+            throw new BoardNotFoundException(id);
         }
 
         board.setTitle(request.getTitle());
@@ -82,7 +83,7 @@ public class BoardService {
     public void deleteBoard(Long id) {
         Board board = boardMapper.findById(id);
         if (board == null) {
-            //throw new BoardNotFoundException(id);
+            throw new BoardNotFoundException(id);
         }
         boardMapper.deleteById(id);
     }
