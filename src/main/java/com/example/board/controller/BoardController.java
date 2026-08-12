@@ -4,11 +4,13 @@ import com.example.board.dto.BoardCreateRequest;
 import com.example.board.dto.BoardResponse;
 import com.example.board.dto.BoardUpdateRequest;
 import com.example.board.dto.PageResponse;
+import com.example.board.security.UserPrincipal;
 import com.example.board.service.BoardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -48,8 +50,10 @@ public class BoardController {
      * POST /api/boards
      */
     @PostMapping
-    public ResponseEntity<BoardResponse> createBoard(@Valid @RequestBody BoardCreateRequest request) {
-        BoardResponse response = boardService.createBoard(request);
+    public ResponseEntity<BoardResponse> createBoard(
+            @Valid @RequestBody BoardCreateRequest request,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        BoardResponse response = boardService.createBoard(request, principal.getNickname());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

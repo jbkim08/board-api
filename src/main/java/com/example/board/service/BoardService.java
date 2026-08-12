@@ -54,11 +54,11 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardResponse createBoard(BoardCreateRequest request) {
+    public BoardResponse createBoard(BoardCreateRequest request, String writer) {
         Board board = Board.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
-                .writer(request.getWriter())
+                .writer(writer)
                 .build(); //롬북 빌더로 객체 만들며 입력하기
 
         boardMapper.insert(board); // insert 후 board.getId()에 PK가 채워짐 (useGeneratedKeys)
