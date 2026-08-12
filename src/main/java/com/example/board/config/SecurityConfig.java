@@ -59,20 +59,17 @@ public class SecurityConfig {
                         // 게시글 조회(GET)는 로그인 없이도 가능
                         .requestMatchers(HttpMethod.GET, "/api/boards/**").permitAll()
                         // H2 콘솔 & Swagger는 개발 편의를 위해 허용
-                        .requestMatchers("/h2-console/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         // 그 외 게시글 등록/수정/삭제 등은 로그인 필요
                         .anyRequest().authenticated()
                 )
-
-                // H2 콘솔이 iframe을 쓰므로 X-Frame-Options 완화 (개발 환경 한정)
-                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
-
                 // UsernamePasswordAuthenticationFilter보다 먼저 우리 JWT 필터가 실행되도록 등록
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
+    //모든 api 적용
     private CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(List.of("*")); // 운영에서는 실제 프론트엔드 도메인으로 제한할 것
