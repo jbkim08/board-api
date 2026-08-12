@@ -208,3 +208,4 @@ Content-Type: application/json
 - `application.yaml`의 `spring.sql.init.mode`가 `never`로 설정되어 있어 `schema.sql`, `data.sql`은 자동 실행되지 않습니다.
 - 초기 데이터가 필요하면 MySQL에서 `schema.sql`과 `data.sql`을 직접 실행하세요.
 - API 문서 도구를 사용하려면 `springdoc-openapi` 의존성이 활성화되어 있어야 합니다.
+- 여기까지 ver 1
