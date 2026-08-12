@@ -24,9 +24,14 @@ dependencies {
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
 	// Validation: 유효성 검사
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	// H2 (초보자용 인메모리 DB, MySQL로 바꾸려면 이 부분과 application.yml 수정)
-	//runtimeOnly 'com.h2database:h2'
+	// MySQL DB
 	runtimeOnly 'com.mysql:mysql-connector-j'
+	// 시큐리티
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	// JWT 토큰
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5' // JSON 파싱용
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
