@@ -58,6 +58,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         // 게시글 조회(GET)는 로그인 없이도 가능
                         .requestMatchers(HttpMethod.GET, "/api/boards/**").permitAll()
+                        // 이미지 파일 조회(GET)는 로그인 없이도 가능
+                        .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                         // H2 콘솔 & Swagger는 개발 편의를 위해 허용
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         // 그 외 게시글 등록/수정/삭제 등은 로그인 필요
