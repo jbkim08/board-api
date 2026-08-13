@@ -30,7 +30,7 @@ CREATE TABLE comment (
     writer      VARCHAR(50)   NOT NULL,
     created_at  TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (board_id) REFERENCES board(id)
+    FOREIGN KEY (board_id) REFERENCES board(id) ON DELETE CASCADE
 );
 
 -- 게시글에 첨부파일 테이블

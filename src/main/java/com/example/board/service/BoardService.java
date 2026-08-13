@@ -126,7 +126,9 @@ public class BoardService {
                 fileStore.deleteFile(attachment.getStoredName());
             }
         }
-        // 2. 게시글 레코드 삭제 (DB 외래키 ON DELETE CASCADE로 인해 comment 및 attachment 테이블 내 매핑 행도 함께 자동 삭제됨)
+        // 2. 기존 DB 스키마에도 안전하도록 댓글을 먼저 삭제한다.
+        commentMapper.deleteByBoardId(id);
+        // 3. 게시글 레코드 삭제 (attachment는 외래키 ON DELETE CASCADE로 함께 삭제됨)
         boardMapper.deleteById(id);
     }
 }

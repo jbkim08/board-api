@@ -26,4 +26,9 @@
         WHERE id = #{id}
     </delete>
 
+    <delete id="deleteByBoardId">
+        DELETE FROM comment
+        WHERE board_id = #{boardId}
+    </delete>
+
 </mapper>

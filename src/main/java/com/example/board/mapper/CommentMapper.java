@@ -19,4 +19,6 @@ public interface CommentMapper {
     List<Comment> findByBoardId(@Param("boardId") Long boardId);
 
     void deleteById(@Param("id") Long id);
+
+    void deleteByBoardId(@Param("boardId") Long boardId);
 }
