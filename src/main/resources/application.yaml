@@ -14,6 +14,11 @@ spring:
     init:
       mode: never  # 매번 실행 시 schema.sql / data.sql 자동 실행
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 30MB
+
 # ===== MyBatis 설정 =====
 mybatis:
   mapper-locations: classpath:mapper/**/*.xml   # XML 매퍼 위치
@@ -33,3 +38,9 @@ jwt:
   secret: ${JWT_SECRET:this-is-a-very-long-development-only-secret-key-please-change-in-production-1234567890}
   expiration: 3600000        # Access Token 만료시간 (ms) - 1시간
   refresh-expiration: 604800000 # Refresh Token 만료시간 (ms) - 7일
+
+
+# ===== 파일 업로드 설정 =====
+file:
+  upload-dir: C:/java/springboot/board/uploads/
+  resource-path: /uploads/**
