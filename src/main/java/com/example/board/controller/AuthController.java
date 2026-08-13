@@ -1,6 +1,7 @@
 package com.example.board.controller;
 
 import com.example.board.dto.LoginRequest;
+import com.example.board.dto.RefreshTokenRequest;
 import com.example.board.dto.SignUpRequest;
 import com.example.board.dto.TokenResponse;
 import com.example.board.service.AuthService;
@@ -37,5 +38,14 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    /**
+     * 토큰 재발급
+     * POST /api/auth/refresh
+     */
+    @PostMapping("/refresh")
+    public ResponseEntity<TokenResponse> refresh(@Valid @RequestBody RefreshTokenRequest request) {
+        return ResponseEntity.ok(authService.refreshToken(request.getRefreshToken()));
     }
 }

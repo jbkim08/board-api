@@ -53,12 +53,52 @@ public class AuthService {
             );
 
             User user = userMapper.findByUsername(request.getUsername());
-            String token = jwtTokenProvider.generateToken(user.getUsername(), user.getRole());
+
+            // Access Token & Refresh Token 생성
+            String accessToken = jwtTokenProvider.generateAccessToken(user.getUsername(), user.getRole());
+            String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUsername());
+
+            // DB에 Refresh Token 저장
+            userMapper.updateRefreshToken(user.getUsername(), refreshToken);
+
             // 토큰 발행 후 전달
-            return TokenResponse.of(token, jwtTokenProvider.getExpirationMs(), user.getUsername(), user.getNickname());
+            return TokenResponse.of(accessToken, refreshToken, jwtTokenProvider.getAccessTokenExpirationMs(), user.getUsername(), user.getNickname());
 
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
     }
+
+    /**
+     * Refresh Token을 검증하고 새로운 Access/Refresh Token을 발급합니다. (Refresh Token Rotation 적용)
+     */
+    @Transactional
+    public TokenResponse refreshToken(String refreshToken) {
+        // 1. Refresh Token 자체 유효성 검증
+        if (refreshToken == null || !jwtTokenProvider.validateToken(refreshToken)) {
+            throw new BadCredentialsException("유효하지 않거나 만료된 Refresh Token입니다.");
+        }
+
+        // 2. DB에서 해당 Refresh Token을 가진 사용자 조회
+        User user = userMapper.findByRefreshToken(refreshToken);
+        if (user == null) {
+            throw new BadCredentialsException("유효하지 않거나 만료된 Refresh Token입니다.");
+        }
+
+        // 3. 새로운 Access Token 및 Refresh Token 생성
+        String newAccessToken = jwtTokenProvider.generateAccessToken(user.getUsername(), user.getRole());
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(user.getUsername());
+
+        // 4. DB의 Refresh Token 갱신
+        userMapper.updateRefreshToken(user.getUsername(), newRefreshToken);
+
+        return TokenResponse.of(
+                newAccessToken,
+                newRefreshToken,
+                jwtTokenProvider.getAccessTokenExpirationMs(),
+                user.getUsername(),
+                user.getNickname()
+        );
+    }
+
 }
