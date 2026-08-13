@@ -21,6 +21,7 @@ public class User {
     private String username;
     private String password; // 암호화된 비밀번호
     private String nickname;
+    private String refreshToken; // DB의 refresh_token 컬럼과 매핑
     private String role;     // "ROLE_USER" 등
     private LocalDateTime createdAt;
 }

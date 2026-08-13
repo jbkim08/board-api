@@ -9,6 +9,12 @@
         WHERE username = #{username}
     </select>
 
+    <select id="findByRefreshToken" resultType="User">
+        SELECT id, username, password, nickname, role, created_at
+        FROM users
+        WHERE refresh_token = #{refreshToken}
+    </select>
+
     <select id="existsByUsername" resultType="boolean">
         SELECT COUNT(*) > 0
         FROM users
@@ -19,5 +25,11 @@
         INSERT INTO users (username, password, nickname, role, created_at)
         VALUES (#{username}, #{password}, #{nickname}, #{role}, CURRENT_TIMESTAMP)
     </insert>
+
+    <update id="updateRefreshToken" >
+        UPDATE users
+        SET refresh_token = #{refreshToken}
+        WHERE username = #{username}
+    </update>
 
 </mapper>
