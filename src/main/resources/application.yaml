@@ -32,3 +32,4 @@ jwt:
   # 운영 환경에서는 코드에 직접 넣지 말고 환경변수(JWT_SECRET)로 주입할 것
   secret: ${JWT_SECRET:this-is-a-very-long-development-only-secret-key-please-change-in-production-1234567890}
   expiration: 3600000        # Access Token 만료시간 (ms) - 1시간
+  refresh-expiration: 604800000 # Refresh Token 만료시간 (ms) - 7일

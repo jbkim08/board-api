@@ -64,9 +64,10 @@ public class BoardController {
     @PutMapping("/{id}")
     public ResponseEntity<BoardResponse> updateBoard(
             @PathVariable Long id,
-            @Valid @RequestBody BoardUpdateRequest request
+            @Valid @RequestBody BoardUpdateRequest request,
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
-        BoardResponse boardResponse = boardService.updateBoard(id, request);
+        BoardResponse boardResponse = boardService.updateBoard(id, request, principal.getNickname());
         return ResponseEntity.ok(boardResponse);
     }
 
@@ -75,8 +76,9 @@ public class BoardController {
      * DELETE /api/boards/{id}
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBoard(@PathVariable Long id) {
-        boardService.deleteBoard(id); //db에서 삭제
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long id,
+                                            @AuthenticationPrincipal UserPrincipal principal) {
+        boardService.deleteBoard(id, principal.getNickname()); //db에서 삭제
         return ResponseEntity.noContent().build(); // 204 보낼 내용이 없음
     }
 
