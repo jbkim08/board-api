@@ -1,15 +1,20 @@
 package com.example.board.service;
 
+import com.example.board.domain.Attachment;
 import com.example.board.domain.Board;
 import com.example.board.dto.*;
 import com.example.board.exception.BoardNotFoundException;
 import com.example.board.exception.UnauthorizedAccessException;
+import com.example.board.mapper.AttachmentMapper;
 import com.example.board.mapper.BoardMapper;
 import com.example.board.mapper.CommentMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,6 +24,8 @@ public class BoardService {
 
     private final BoardMapper boardMapper;
     private final CommentMapper commentMapper;
+    private final FileStore fileStore;
+    private final AttachmentMapper attachmentMapper;
 
     /**
      * 목록 조회 (검색 + 페이징)
@@ -54,12 +61,16 @@ public class BoardService {
         List<CommentResponse> commentResponses = commentMapper.findByBoardId(id).stream()
                 .map(CommentResponse::from)
                 .toList();
+        // 게시글에 첨부된 파일 목록 조회
+        List<AttachmentResponse> attachmentResponses = attachmentMapper.findByBoardId(id).stream()
+                .map(AttachmentResponse::from)
+                .toList();
 
-        return BoardResponse.from(board, commentResponses);
+        return BoardResponse.from(board, commentResponses, attachmentResponses);
     }
 
     @Transactional
-    public BoardResponse createBoard(BoardCreateRequest request, String writer) {
+    public BoardResponse createBoard(BoardCreateRequest request, String writer, List<MultipartFile> files) throws IOException {
         Board board = Board.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
@@ -67,7 +78,18 @@ public class BoardService {
                 .build(); //롬북 빌더로 객체 만들며 입력하기
 
         boardMapper.insert(board); // insert 후 board.getId()에 PK가 채워짐 (useGeneratedKeys)
-        return BoardResponse.from(board);
+        // 2. 첨부파일 저장 처리
+        List<AttachmentResponse> attachmentResponses = new ArrayList<>();
+        if (files != null && !files.isEmpty()) {
+            List<Attachment> attachments = fileStore.storeFiles(files);
+            for (Attachment attachment : attachments) {
+                attachment.setBoardId(board.getId()); // 영속화된 게시글 고유 ID 매핑
+                attachmentMapper.insert(attachment); // DB에 첨부파일 정보 삽입
+                attachmentResponses.add(AttachmentResponse.from(attachment));
+            }
+        }
+
+        return BoardResponse.from(board, null, attachmentResponses);
     }
 
     @Transactional
@@ -97,6 +119,14 @@ public class BoardService {
         if (!board.getWriter().equals(currentNickname)) {
             throw new UnauthorizedAccessException("게시글을 삭제할 권한이 없습니다.");
         }
+        // 1. DB에서 참조 무결성(Cascade)으로 지워지기 전에, 업로드된 실제 로컬 디렉토리 내 물리 파일들을 선제 삭제 처리
+        List<Attachment> attachments = attachmentMapper.findByBoardId(id);
+        if (attachments != null) {
+            for (Attachment attachment : attachments) {
+                fileStore.deleteFile(attachment.getStoredName());
+            }
+        }
+        // 2. 게시글 레코드 삭제 (DB 외래키 ON DELETE CASCADE로 인해 comment 및 attachment 테이블 내 매핑 행도 함께 자동 삭제됨)
         boardMapper.deleteById(id);
     }
 }

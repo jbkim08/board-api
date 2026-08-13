@@ -9,9 +9,14 @@ import com.example.board.service.BoardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/boards")
@@ -46,14 +51,21 @@ public class BoardController {
     }
 
     /**
-     * 게시글 등록
+     * 게시글 등록 (로그인 필요, 이미지/파일 첨부 지원)
      * POST /api/boards
+     * Header: Authorization: Bearer {accessToken}
+     * Content-Type: multipart/form-data
+     *
+     * @RequestPart("board")는 JSON 형식의 게시글 정보를 DTO로 받습니다.
+     * @RequestPart("files")는 업로드할 파일 목록을 받습니다.
      */
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BoardResponse> createBoard(
-            @Valid @RequestBody BoardCreateRequest request,
-            @AuthenticationPrincipal UserPrincipal principal) {
-        BoardResponse response = boardService.createBoard(request, principal.getNickname());
+            @RequestPart("board") @Valid BoardCreateRequest request,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
+            @AuthenticationPrincipal UserPrincipal principal
+    ) throws IOException {
+        BoardResponse response = boardService.createBoard(request, principal.getNickname(), files);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
